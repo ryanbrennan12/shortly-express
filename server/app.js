@@ -15,20 +15,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-
-
-app.get('/',
-(req, res) => {
+app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/create',
-(req, res) => {
+app.get('/create', (req, res) => {
   res.render('index');
 });
 
-app.get('/links',
-(req, res, next) => {
+app.get('/links', (req, res, next) => {
   models.Links.getAll()
     .then(links => {
       res.status(200).send(links);
@@ -39,20 +34,10 @@ app.get('/links',
 });
 
 app.post('/signup', (req, res) => {
-  console.log('hellllooooo', req.body)
-  let name = req.body.username;
-  console.log('i am the name', name)
-  let password = req.body.password;
-  models.Users.create(name, password)
-  .then((result) => {
-    console.log('i am the result', result)
-  }).catch((err) => {
-    console.log('Error in creating new user', err)
-  })
-})
+  models.Users.create(req.body)
+});
 
-app.post('/links',
-(req, res, next) => {
+app.post('/links', (req, res, next) => {
   var url = req.body.url;
   if (!models.Links.isValidUrl(url)) {
     // send back a 404 if link is not valid
@@ -91,8 +76,6 @@ app.post('/links',
 // Write your authentication routes here
 /************************************************************/
 
-
-
 /************************************************************/
 // Handle the code parameter route last - if all other routes fail
 // assume the route is a short code and try and handle it here.
@@ -100,10 +83,8 @@ app.post('/links',
 /************************************************************/
 
 app.get('/:code', (req, res, next) => {
-
   return models.Links.get({ code: req.params.code })
     .tap(link => {
-
       if (!link) {
         throw new Error('Link does not exist');
       }
