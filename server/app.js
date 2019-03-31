@@ -5,6 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
+const db = require('./db/index.js')
 
 const app = express();
 
@@ -34,9 +35,24 @@ app.get('/links', (req, res, next) => {
 });
 
 app.post('/signup', (req, res) => {
-  models.Users.create(req.body);
-  res.status(200).json('All signed up');
+  let username = req.body.username;
+  let pw = req.body.password;
+
+  return models.Users.get({username}).then((exists) => {
+    if (exists) {
+      res.redirect('/signup');
+    } else {
+      models.Users.create(req.body)
+      res.status(200).json('Congrats mang, you have an account!')
+    }
+  })
 });
+
+
+
+
+
+
 
 app.post('/links', (req, res, next) => {
   var url = req.body.url;

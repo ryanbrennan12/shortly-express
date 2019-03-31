@@ -16,4 +16,5 @@ db.connectAsync()
   .then(() => db.queryAsync(`USE ${database}`))
   .then(() => createTables(db));
 
+
 module.exports = db;
