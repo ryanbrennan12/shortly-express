@@ -5,7 +5,7 @@ const partials = require('express-partials');
 const bodyParser = require('body-parser');
 const Auth = require('./middleware/auth');
 const models = require('./models');
-const db = require('./db/index.js')
+const db = require('./db/index.js');
 
 const app = express();
 
@@ -38,21 +38,16 @@ app.post('/signup', (req, res) => {
   let username = req.body.username;
   let pw = req.body.password;
 
-  return models.Users.get({username}).then((exists) => {
+  models.Users.get({ username }).then(exists => {
     if (exists) {
       res.redirect('/signup');
     } else {
-      models.Users.create(req.body)
-      res.status(200).json('Congrats mang, you have an account!')
+      models.Users.create(req.body).then(() => {
+        res.redirect('/');
+      });
     }
-  })
+  });
 });
-
-
-
-
-
-
 
 app.post('/links', (req, res, next) => {
   var url = req.body.url;
@@ -98,6 +93,20 @@ app.post('/links', (req, res, next) => {
 // assume the route is a short code and try and handle it here.
 // If the short-code doesn't exist, send the user to '/'
 /************************************************************/
+app.post('/login', (req, res) => {
+  let username = req.body.username;
+  let pw = req.body.password;
+
+  models.Users.get({ username }).then(user => {
+    if (user && models.Users.compare(pw, user.password, user.salt)) {
+      res.redirect('/');
+    } else if (user && !models.Users.compare(pw, user.password, user.salt)) {
+      res.redirect('/login');
+    } else {
+      res.redirect('/login');
+    }
+  });
+});
 
 app.get('/:code', (req, res, next) => {
   return models.Links.get({ code: req.params.code })
@@ -120,5 +129,5 @@ app.get('/:code', (req, res, next) => {
       res.redirect('/');
     });
 });
-
+//compare(attempted, password, salt)
 module.exports = app;
