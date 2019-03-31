@@ -34,7 +34,8 @@ app.get('/links', (req, res, next) => {
 });
 
 app.post('/signup', (req, res) => {
-  models.Users.create(req.body)
+  models.Users.create(req.body);
+  res.status(200).json('All signed up');
 });
 
 app.post('/links', (req, res, next) => {
