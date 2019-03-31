@@ -100,8 +100,6 @@ app.post('/login', (req, res) => {
   models.Users.get({ username }).then(user => {
     if (user && models.Users.compare(pw, user.password, user.salt)) {
       res.redirect('/');
-    } else if (user && !models.Users.compare(pw, user.password, user.salt)) {
-      res.redirect('/login');
     } else {
       res.redirect('/login');
     }
